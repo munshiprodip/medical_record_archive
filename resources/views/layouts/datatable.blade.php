@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title> @yield('title') | Attendance Management System</title>
+    <title> @yield('title') | Medical Record Archive</title>
    
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('/favicon.ico') }}" />
@@ -67,7 +67,7 @@
                 <span class="app-brand-logo demo">
                     <img width="32" height="22" src="{{ asset('/images/logo/app-logo.png') }}" alt="">
                 </span>
-                <span class="app-brand-text demo menu-text fw-bold">AMS</span>
+                <span class="app-brand-text demo menu-text fw-bold">MRA</span>
             </a>
 
             <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -126,62 +126,71 @@
                 <span class="menu-header-text">SETTINGS & OTHERS</span>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('organizations') ?  'active' : '' }}">
-                <a href="{{ route('organizations') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
-                    <div>Organizations</div>
+            <li class="menu-item {{ Route::currentRouteNamed('specialities') ?  'active' : '' }}">
+                <a href="{{ route('specialities') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-stethoscope"></i>
+                    <div>Specialities</div>
+                </a>
+            </li>
+
+            <li class="menu-item {{ Route::currentRouteNamed('doctors') ?  'active' : '' }}">
+                <a href="{{ route('doctors') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-school"></i>
+                    <div>Doctors</div>
                 </a>
             </li>
 
             <li class="menu-item {{ Route::currentRouteNamed('departments') ?  'active' : '' }}">
                 <a href="{{ route('departments') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
+                    <i class="menu-icon tf-icons ti ti-nurse"></i>
                     <div>Departments</div>
                 </a>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('schedules') ?  'active' : '' }}">
-                <a href="{{ route('schedules') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
-                    <div>Schedules</div>
+            <li class="menu-item {{ Route::currentRouteNamed('wards') ?  'active' : '' }}">
+                <a href="{{ route('wards') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-building-hospital"></i>
+                    <div>Wards</div>
                 </a>
             </li>
+
+
 
             <!-- User Area -->
             <li class="menu-header small text-uppercase">
-                <span class="menu-header-text">ATTENDANCE MANAGEMENT</span>
+                <span class="menu-header-text">FILE MANAGEMENT</span>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('employees') ?  'active' : '' }}">
-                <a href="{{ route('employees') }}" class="menu-link">
+            <li class="menu-item {{ Route::currentRouteNamed('documents') ?  'active' : '' }}">
+                <a href="{{ route('documents') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-users"></i>
-                    <div>Employees</div>
+                    <div>All Patients</div>
                 </a>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('attendances.attendancelogs') ?  'active' : '' }}">
-                <a href="{{ route('attendances.attendancelogs') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
-                    <div>Attendances Log</div>
+            <li class="menu-item {{ Route::currentRouteNamed('documents.is_dead') ?  'active' : '' }}">
+                <a href="{{ route('documents.is_dead') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-badge"></i>
+                    <div>Dead Patients</div>
                 </a>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('attendances') ?  'active' : '' }}">
-                <a href="{{ route('attendances') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
-                    <div>Todays Attendances</div>
+            <li class="menu-item {{ Route::currentRouteNamed('documents.is_police_case') ?  'active' : '' }}">
+                <a href="{{ route('documents.is_police_case') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-file-invoice"></i>
+                    <div>Police Case</div>
                 </a>
             </li>
 
 
             <!-- Profile setup Area -->
             <li class="menu-header small text-uppercase">
-                <span class="menu-header-text">PRSONALIZATION</span>
+                <span class="menu-header-text">REPORTS</span>
             </li>
 
-            <li class="menu-item {{ Route::currentRouteNamed('reports.index') ?  'active' : '' }}">
-                <a href="{{ route('reports.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-users"></i>
+            <li class="menu-item {{ Route::currentRouteNamed('reports') ?  'active' : '' }}">
+                <a href="{{ route('reports') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-files"></i>
                     <div>Generate Report</div>
                 </a>
             </li>

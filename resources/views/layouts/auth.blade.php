@@ -91,7 +91,7 @@
             class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center"
           >
             <img
-              src="{{ asset('assets/img/illustrations/login_bg.png') }}"
+              src="{{ asset('assets/img/illustrations/archive_login.png') }}"
               alt="auth-login-cover"
               class="img-fluid my-5 auth-illustration"
             />

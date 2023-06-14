@@ -3,26 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-use App\Models\Organization;
+use App\Models\Ward;
 
-class OrganizationController extends Controller
+class WardController extends Controller
 {
     function __construct()
     {
-        //$this->middleware('permission:Medication Settings');
+        $this->middleware('role:Super Admin', ['only' => ['destroy']]);
     }
     // Display a listing of the resource & return response for ajax request.
     public function index(Request $request)
     {
         if($request->ajax()){
-            $organizations = Organization::where('id', '>', 0);
-            return DataTables::of($organizations)->addIndexColumn()->make(true);
+            $wards = Ward::where('id', '>', 0);
+            return DataTables::of($wards)->addIndexColumn()->make(true);
         }
-        return view('organizations.index');
+        return view('wards.index');
     }
 
     // Store a newly created resource in storage & return json response
@@ -41,12 +40,12 @@ class OrganizationController extends Controller
             ]);
         }
 
-        $organization = Organization::create([
+        $ward = Ward::create([
             'name' => $request->name,
             'created_by' => auth()->id(),
         ]);
 
-        if($organization){
+        if($ward){
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
@@ -67,11 +66,11 @@ class OrganizationController extends Controller
     //Find the specified resource in storage & return json response
     public function findById($id)
     {
-        $organization = Organization::findOrFail($id);
-        if($organization){
+        $ward = Ward::findOrFail($id);
+        if($ward){
             return response()->json([
                 'success'       => true,
-                'data'     => $organization,
+                'data'     => $ward,
             ]);
         }else{
             return response()->json([
@@ -86,7 +85,7 @@ class OrganizationController extends Controller
     //Update the specified resource in storage & return json response
     public function update(Request $request, $id)
     {
-        $organization = Organization::findOrFail($id);
+        $ward = Ward::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
         ]);
@@ -100,8 +99,8 @@ class OrganizationController extends Controller
             ]);
         }
 
-        $organization->name = $request->name;
-        $organization->save();
+        $ward->name = $request->name;
+        $ward->save();
       
         return response()->json([
             'success'   => true,
@@ -115,9 +114,9 @@ class OrganizationController extends Controller
     //Change the current status of specified resource from storage & return json response.
     public function changeStatus($id)
     {
-        $organization = Organization::findOrFail($id);
-        $organization->status = !$organization->status;
-        $organization->save();
+        $ward = Ward::findOrFail($id);
+        $ward->status = !$ward->status;
+        $ward->save();
         return response()->json([
             'success'   => true,
             'type'      => 'success',
@@ -129,7 +128,7 @@ class OrganizationController extends Controller
     //Remove the specified resource from storage & return json response.
     public function destroy($id)
     {
-        Organization::destroy($id);
+        Ward::destroy($id);
 
         return response()->json([
             'success'   => true,

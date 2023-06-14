@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Attendance;
-use App\Models\Employee;
+use App\Models\Document;
+use App\Models\Department;
+use App\Models\Doctor;
 use Carbon\Carbon;
 use PDF;
 
@@ -13,74 +14,49 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $employees      = auth()->user()->organization->employees;
-        $departments    = auth()->user()->organization->departments;
-        return view('reports.index', compact('employees', 'departments'));
+        $doctors          = Doctor::all();
+        $departments      = Department::all();
+        return view('reports.index', compact('doctors', 'departments'));
     }
 
     public function generateReport(Request $request)
     {
+        // Daily/Monyhly reports of all/dead/police files - 
         if($request->reports_date_type=='daily' ){
             $reports_date = $request->reports_date;
-            $employees = Employee::with(['attendances' => function ($query) use($reports_date) {
-                $query->whereDate('attendance_date', Carbon::parse($reports_date))
-                    ->whereIn('attendance_type', [0, 1])
-                    ->orderBy('attendance_type')
-                    ->orderBy('attendance_time');
-            }])->where('organization_id', auth()->user()->organization_id);
-
-            if($request->reports_employee_type=='department'){
-                $employees = $employees->where('department_id', $request->reports_department_id);
-            }elseif($request->reports_employee_type=='single'){
-                $employees = $employees->where('id', $request->reports_employee_id);
-            }
-            
-            $employees = $employees->get();
-            $i = 0;
-            $employees = $this->processEmployeesAttendance($employees);
-
-            $pdf = PDF::loadView('reports.daily_general_attendances', compact('employees', 'i', 'reports_date'), [], [
-                'title' => 'Attendance report',
-                'margin_top' => 35,
-                'margin_header' => 5,
-            ]);
-            return $pdf->stream('attendancereport'.'.pdf');
-        
-            return view('reports.daily_general_attendances', compact('employees', 'i'));
-        }
-
-        if($request->reports_date_type=='monthly' ){
+            $documents = Document::whereDate('created_at', Carbon::parse($reports_date));
+            $date_type = 'Daily';
+        }elseif($request->reports_date_type=='monthly' ){
             $reports_date = $request->reports_month.' '.$request->reports_year;
-            $employees = Employee::with(['attendances' => function ($query) use($reports_date) {
-                $query->whereMonth('attendance_date', Carbon::parse($reports_date))
-                    ->whereIn('attendance_type', [0, 1])
-                    ->orderBy('attendance_date')
-                    ->orderBy('attendance_type')
-                    ->orderBy('attendance_time');
-            }])->where('organization_id', auth()->user()->organization_id);
-
-            if($request->reports_employee_type=='department'){
-                $employees = $employees->where('department_id', $request->reports_department_id);
-            }elseif($request->reports_employee_type=='single'){
-                $employees = $employees->where('id', $request->reports_employee_id);
-            }
-            
-            $employees = $employees->get();
-            $i = 0;
-
-            $employees = $this->processEmployeesAttendance($employees);
-
-            $pdf = PDF::loadView('reports.monthly_general_attendances', compact('employees', 'i', 'reports_date'), [], [
-                'title' => 'Attendance report',
-                'margin_top' => 30,
-                'margin_header' => 10,
-            ]);
-            return $pdf->stream('attendancereport'.'.pdf');
-
-            return view('reports.monthly_general_attendances', compact('employees', 'i'));
+            $documents = Document::whereMonth('created_at', Carbon::parse($reports_date));
+            $date_type = 'Monthly';
         }
 
+        $patients_type = 'all';
+
+        if($request->document_type=='dead'){
+            $documents = $documents->where('is_dead', 1);
+            $patients_type = 'dead';
+        }elseif($request->document_type=='police'){
+            $documents = $documents->where('is_police_case', 1);
+            $patients_type = 'police';
+        }
+       
+        if($request->reports_document_type=='department_wise'){
+            $documents = $documents->where('department_id', $request->reports_department_id);
+        }elseif($request->reports_document_type=='doctor_wise'){
+            $documents = $documents->where('doctor_id', $request->reports_doctor_id);
+        }
         
+        $documents = $documents->get();
+        $i = 0;
+        $title = "$date_type reports of $patients_type files - $reports_date";
+        $pdf = PDF::loadView('reports.pdf_report', compact('documents', 'i', 'title'), [], [
+            'title' => 'Documents report',
+            'margin_top' => 35,
+            'margin_header' => 5,
+        ]);
+        return $pdf->stream('document_list'.'.pdf');
     }
 
 

@@ -5,42 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class Document extends Model
 {
     use HasFactory;
-
     protected $fillable = [
         'name',
-        'employment_id',
-        'organization_id',
+        'hn',
+        'an',
+        'file_path',
         'department_id',
-        'designation',
-        'optional',
-        'schedule_id',
-        'mobile',
-        'joining_date',
+        'doctor_id',
+        'ward_id',
+        'is_dead',
+        'is_police_case',
         'status',
         'created_by',
     ];
-
-    public function organization()
-    {
-        return $this->belongsTo(Organization::class, "organization_id");
-    }
 
     public function department()
     {
         return $this->belongsTo(Department::class, "department_id");
     }
-
-    public function schedule()
+    public function doctor()
     {
-        return $this->belongsTo(Schedule::class, "schedule_id");
+        return $this->belongsTo(Doctor::class, "doctor_id");
     }
-
-    public function attendances()
+    public function ward()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->belongsTo(Ward::class, "ward_id");
     }
 
     public function createdBy()

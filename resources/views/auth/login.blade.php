@@ -1,7 +1,7 @@
 @extends("layouts.auth")
 
 @section('content')
-    <h3 class="mb-1 fw-bold">Welcome</h3>
+    <h3 class="mb-1 fw-bold">Medical Record Archive</h3>
         <p class="mb-4">
             Please sign-in to your account
         </p>

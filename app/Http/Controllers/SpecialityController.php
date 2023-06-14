@@ -3,27 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-use App\Models\Schedule;
-use Carbon\Carbon;
+use App\Models\Speciality;
 
-class ScheduleController extends Controller
+class SpecialityController extends Controller
 {
     function __construct()
     {
-        //$this->middleware('permission:Medication Settings');
+        $this->middleware('role:Super Admin', ['only' => ['destroy']]);
     }
     // Display a listing of the resource & return response for ajax request.
     public function index(Request $request)
     {
         if($request->ajax()){
-            $schedules = Schedule::where('organization_id', auth()->user()->organization_id);
-            return DataTables::of($schedules)->addIndexColumn()->make(true);
+            $specialities = Speciality::where('id', '>', 0);
+            return DataTables::of($specialities)->addIndexColumn()->make(true);
         }
-        return view('schedules.index');
+        return view('specialities.index');
     }
 
     // Store a newly created resource in storage & return json response
@@ -31,8 +29,6 @@ class ScheduleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
-            'start_time'          => 'required',
-            'end_time'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -44,15 +40,12 @@ class ScheduleController extends Controller
             ]);
         }
 
-        $schedule = Schedule::create([
-            'name'              => $request->name,
-            'start_time'        => Carbon::parse($request->start_time)->format('H:i:s'),
-            'end_time'          => Carbon::parse($request->end_time)->format('H:i:s'),
-            'organization_id'   => auth()->user()->organization_id,
+        $speciality = Speciality::create([
+            'name' => $request->name,
             'created_by' => auth()->id(),
         ]);
 
-        if($schedule){
+        if($speciality){
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
@@ -73,11 +66,11 @@ class ScheduleController extends Controller
     //Find the specified resource in storage & return json response
     public function findById($id)
     {
-        $schedule = Schedule::findOrFail($id);
-        if($schedule){
+        $speciality = Speciality::findOrFail($id);
+        if($speciality){
             return response()->json([
                 'success'       => true,
-                'data'     => $schedule,
+                'data'     => $speciality,
             ]);
         }else{
             return response()->json([
@@ -92,11 +85,9 @@ class ScheduleController extends Controller
     //Update the specified resource in storage & return json response
     public function update(Request $request, $id)
     {
-        $schedule = Schedule::findOrFail($id);
+        $speciality = Speciality::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
-            'start_time'          => 'required',
-            'end_time'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -108,10 +99,8 @@ class ScheduleController extends Controller
             ]);
         }
 
-        $schedule->name = $request->name;
-        $schedule->start_time = $request->start_time;
-        $schedule->end_time = $request->end_time;
-        $schedule->save();
+        $speciality->name = $request->name;
+        $speciality->save();
       
         return response()->json([
             'success'   => true,
@@ -125,9 +114,9 @@ class ScheduleController extends Controller
     //Change the current status of specified resource from storage & return json response.
     public function changeStatus($id)
     {
-        $schedule = Schedule::findOrFail($id);
-        $schedule->status = !$schedule->status;
-        $schedule->save();
+        $speciality = Speciality::findOrFail($id);
+        $speciality->status = !$speciality->status;
+        $speciality->save();
         return response()->json([
             'success'   => true,
             'type'      => 'success',
@@ -139,7 +128,7 @@ class ScheduleController extends Controller
     //Remove the specified resource from storage & return json response.
     public function destroy($id)
     {
-        Schedule::destroy($id);
+        Speciality::destroy($id);
 
         return response()->json([
             'success'   => true,

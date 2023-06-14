@@ -59,7 +59,7 @@ Route::group(
     [
         'middleware' => ['auth'],
         'namespace' => 'App\Http\Controllers',
-        'prefix'=>'organizations'
+        'prefix'=>'archive'
     ], 
-    __DIR__.'/web/organizationsRoutes.php'
+    __DIR__.'/web/archiveSetupRoutes.php'
 );

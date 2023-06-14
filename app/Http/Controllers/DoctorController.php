@@ -7,30 +7,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
-use App\Models\Employee;
+use App\Models\Doctor;
+use App\Models\Speciality;
 
-class EmployeeController extends Controller
+
+class DoctorController extends Controller
 {
     function __construct()
     {
-        //$this->middleware('permission:Medication Settings');
+        $this->middleware('role:Super Admin', ['only' => ['destroy']]);
     }
     // Display a listing of the resource & return response for ajax request.
     public function index(Request $request)
     {
+        $specialities = Speciality::where('status', 1)->get();
         if($request->ajax()){
-            $employees = Employee::where('organization_id', auth()->user()->organization_id);
-            return DataTables::of($employees)
-            ->addColumn('department', function($row){
-                return $row->department->name;
+            $doctors = Doctor::where('id', '>', 0);
+            return DataTables::of($doctors)
+            ->addColumn('speciality', function($row){
+                return $row->speciality->name;
             })
-            ->addColumn('schedule', function($row){
-                return $row->schedule->name;
-            })
-            ->addIndexColumn()
-            ->make(true);
+            ->addIndexColumn()->make(true);
         }
-        return view('employees.index');
+        return view('doctors.index', compact('specialities'));
     }
 
     // Store a newly created resource in storage & return json response
@@ -38,11 +37,7 @@ class EmployeeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
-            'employment_id' => 'required',
-            'department_id'   => 'required',
-            'designation'     => 'required',
-            'schedule_id'     => 'required',
-            'mobile'          => 'required',
+            'speciality_id'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -54,18 +49,13 @@ class EmployeeController extends Controller
             ]);
         }
 
-        $employee = Employee::create([
-            'name'                => $request->name,
-            'employment_id'       => $request->employment_id,
-            'organization_id'     => auth()->user()->organization_id,
-            'department_id'       => $request->department_id,
-            'designation'         => $request->designation,
-            'schedule_id'         => $request->schedule_id,
-            'mobile'              => $request->mobile,
-            'created_by'          => auth()->id(),
+        $doctor = Doctor::create([
+            'name' => $request->name,
+            'speciality_id' => $request->speciality_id,
+            'created_by' => auth()->id(),
         ]);
 
-        if($employee){
+        if($doctor){
             return response()->json([
                 'success'   => true,
                 'type'      => 'success',
@@ -86,11 +76,11 @@ class EmployeeController extends Controller
     //Find the specified resource in storage & return json response
     public function findById($id)
     {
-        $employee = Employee::findOrFail($id);
-        if($employee){
+        $doctor = Doctor::findOrFail($id);
+        if($doctor){
             return response()->json([
                 'success'       => true,
-                'data'     => $employee,
+                'data'     => $doctor,
             ]);
         }else{
             return response()->json([
@@ -105,14 +95,10 @@ class EmployeeController extends Controller
     //Update the specified resource in storage & return json response
     public function update(Request $request, $id)
     {
-        $employee = Employee::findOrFail($id);
+        $doctor = Doctor::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'name'          => 'required',
-            'employment_id' => 'required',
-            'department_id'   => 'required',
-            'designation'     => 'required',
-            'schedule_id'     => 'required',
-            'mobile'          => 'required',
+            'speciality_id'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -124,13 +110,9 @@ class EmployeeController extends Controller
             ]);
         }
 
-        $employee->name = $request->name;
-        $employee->employment_id = $request->employment_id;
-        $employee->department_id = $request->department_id;
-        $employee->designation = $request->designation;
-        $employee->schedule_id = $request->schedule_id;
-        $employee->mobile = $request->mobile;
-        $employee->save();
+        $doctor->name = $request->name;
+        $doctor->speciality_id = $request->speciality_id;
+        $doctor->save();
       
         return response()->json([
             'success'   => true,
@@ -144,9 +126,9 @@ class EmployeeController extends Controller
     //Change the current status of specified resource from storage & return json response.
     public function changeStatus($id)
     {
-        $employee = Employee::findOrFail($id);
-        $employee->status = !$employee->status;
-        $employee->save();
+        $doctor = Doctor::findOrFail($id);
+        $doctor->status = !$doctor->status;
+        $doctor->save();
         return response()->json([
             'success'   => true,
             'type'      => 'success',
@@ -158,7 +140,7 @@ class EmployeeController extends Controller
     //Remove the specified resource from storage & return json response.
     public function destroy($id)
     {
-        Employee::destroy($id);
+        Doctor::destroy($id);
 
         return response()->json([
             'success'   => true,

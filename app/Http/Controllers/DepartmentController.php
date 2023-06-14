@@ -13,13 +13,13 @@ class DepartmentController extends Controller
 {
     function __construct()
     {
-        //$this->middleware('permission:Medication Settings');
+        $this->middleware('role:Super Admin', ['only' => ['destroy']]);
     }
     // Display a listing of the resource & return response for ajax request.
     public function index(Request $request)
     {
         if($request->ajax()){
-            $departments = Department::where('organization_id', auth()->user()->organization_id);
+            $departments = Department::where('id', '>', 0);
             return DataTables::of($departments)->addIndexColumn()->make(true);
         }
         return view('departments.index');
@@ -42,8 +42,7 @@ class DepartmentController extends Controller
         }
 
         $department = Department::create([
-            'name'              => $request->name,
-            'organization_id'   => auth()->user()->organization_id,
+            'name' => $request->name,
             'created_by' => auth()->id(),
         ]);
 

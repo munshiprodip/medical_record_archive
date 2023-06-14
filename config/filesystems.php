@@ -36,6 +36,7 @@ return [
             'throw' => false,
         ],
 
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -54,6 +55,20 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
+        ],
+
+        
+
+        'ftp' => [
+            'driver'    => 'ftp',
+            'host'      => env('FTP_HOST'),
+            'username'  => env('FTP_USERNAME'),
+            'password'  => env('FTP_PASSWORD'),
+            'port'      => 21,
+            'root'      => env('FTP_ROOT'),
+            'passive'   => env('FTP_PASSIVE', true),
+            'ssl'       => env('FTP_SSL', false),
+            'timeout'   => 30,
         ],
 
     ],
